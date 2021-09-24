@@ -1,4 +1,4 @@
-name: utopia-web-cloud-run
+name: utopia-price-updater-cloud-run
 
 on:
   push:
