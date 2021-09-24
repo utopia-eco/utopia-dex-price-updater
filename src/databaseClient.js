@@ -13,8 +13,8 @@ const { createPool } = require('mysql');
 const pool = mysql.createPool({
   user: "price",
   password: "price",
-  database: "token_pair_price_history",
-  socketPath: `/cloudsql/utopia-315014:us-west1:utp-dex-price`,
+  database: "token_price_history",
+  socketPath: `/cloudsql/utopia-315014:us-west1:utp-dex-db`,
 });
 
 const pool2 = mysql.createPool({
