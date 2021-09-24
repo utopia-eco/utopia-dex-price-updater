@@ -13,6 +13,20 @@ app.get('/', (req, res) => {
   res.send('This service updates the price history of tokens')
 })
 
+// Returns associated limit orders for orderer address
+app.route('/testGet')
+  .get(function(req, res, next) {
+    const query = "SELECT * FROM 0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82_14400"
+    pool.query(query, [ req.params.ordererAddress ], (error, results) => {
+      if (error) throw error;
+      if (!results[0]) {
+        res.json({ status: "Not Found"});
+      } else {
+        res.json(results[0]);
+      }
+    })
+  });
+
 app.get('/health', (req, res) => res.send("Healthy"));
 
 const { Bar } = require('./bar.js')
@@ -74,9 +88,9 @@ function updateDatabaseEntry(bar) {
     "WHERE startTime = ?";
   pool.query(query, Object.values(data), (error) => {
     if (error) {
-      console.error(process.env.DB_USER)
-      console.error(process.env.DB_PASS)
-      console.error(process.env.DB_DATABASE)
+      console.error('dbuser' + process.env.DB_USER)
+      console.error('dbpass' + process.env.DB_PASS)
+      console.error('dbdb' + process.env.DB_DATABASE)
       console.error(process.env.INSTANCE_CONNECTION_NAME)
       console.error("Price update failed", data, error)
     }
