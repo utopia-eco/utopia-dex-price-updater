@@ -4,7 +4,7 @@ const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
 const connection = require('./databaseClient');
-const pool = require('./databaseClient');
+const { pool, pool2 } = require('./databaseClient');
 const port = process.env.PORT
 
 
@@ -32,7 +32,7 @@ app.route('/testGet')
 app.route('/testGet2')
   .get(function(req, res) {
     const query = "SELECT * FROM limitOrders"
-    pool.query(query, [ req.params.ordererAddress ], (error, results) => {
+    pool2.query(query, [ req.params.ordererAddress ], (error, results) => {
       console.error(error);
       if (error) throw error;
       if (!results[0]) {
