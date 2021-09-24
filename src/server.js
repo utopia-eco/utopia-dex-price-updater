@@ -37,9 +37,9 @@ app.listen(port, async () => {
       await priceUpdater.init(token); 
       var currentPrice = await priceUpdater.getLatestPrice(token);
       console.log(token, currentPrice)
-      updateCacheAndDatabase(token, fiveMinBarMap, 300, priceUpdateTime)
-      updateCacheAndDatabase(token, fourHrBarMap, 14400, priceUpdateTime)
-      updateCacheAndDatabase(token, dailyBarMap, 86400, priceUpdateTime)
+      updateCacheAndDatabase(token, currentPrice, fiveMinBarMap, 300, priceUpdateTime)
+      updateCacheAndDatabase(token, currentPrice, fourHrBarMap, 14400, priceUpdateTime)
+      updateCacheAndDatabase(token, currentPrice, dailyBarMap, 86400, priceUpdateTime)
 
       await new Promise(r => setTimeout(r, 2000));
 
@@ -48,7 +48,7 @@ app.listen(port, async () => {
   }
 })
 
-function updateCacheAndDatabase(token, barMap, timePeriod, currentTime) {
+function updateCacheAndDatabase(token, currentPrice, barMap, timePeriod, currentTime) {
   var bar = barMap.get(token);
       if (bar != null && (bar.startTime + timePeriod) < currentTime) {
         bar.updatePrice(currentPrice, token);
