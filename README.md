@@ -1,0 +1,1 @@
+This service updates the price of the different pairs of cryptocurrencies
