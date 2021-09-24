@@ -60,23 +60,23 @@ app.listen(port, async () => {
   var dailyBarMap = new Map();
   var tokens = Tokens.TokenList;
 
-  while (false) {
-    // Loop through tokens that we are interestedin
-    for  (const token of tokens) {
-      const priceUpdateTime = Date.now();
-      await priceUpdater.init(token); 
-      var currentPrice = await priceUpdater.getLatestPrice(token);
-      console.log(token, currentPrice)
-      fiveMinBarMap.set(token, updateCacheAndDatabase(token, currentPrice, fiveMinBarMap, 300, priceUpdateTime));
-      fourHrBarMap.set(token, updateCacheAndDatabase(token, currentPrice, fourHrBarMap, 14400, priceUpdateTime));
-      dailyBarMap.set(token, updateCacheAndDatabase(token, currentPrice, dailyBarMap, 86400, priceUpdateTime));
+  // while (false) {
+  //   // Loop through tokens that we are interestedin
+  //   for  (const token of tokens) {
+  //     const priceUpdateTime = Date.now();
+  //     await priceUpdater.init(token); 
+  //     var currentPrice = await priceUpdater.getLatestPrice(token);
+  //     console.log(token, currentPrice)
+  //     fiveMinBarMap.set(token, updateCacheAndDatabase(token, currentPrice, fiveMinBarMap, 300, priceUpdateTime));
+  //     fourHrBarMap.set(token, updateCacheAndDatabase(token, currentPrice, fourHrBarMap, 14400, priceUpdateTime));
+  //     dailyBarMap.set(token, updateCacheAndDatabase(token, currentPrice, dailyBarMap, 86400, priceUpdateTime));
       
 
-      await new Promise(r => setTimeout(r, 200000000));
+  //     await new Promise(r => setTimeout(r, 200000000));
 
-    }
+  //   }
     
-  }
+  // }
 })
 
 function updateCacheAndDatabase(token, currentPrice, barMap, timePeriod, currentTime) {
