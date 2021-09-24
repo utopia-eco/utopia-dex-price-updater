@@ -95,11 +95,10 @@ function createDatabaseEntry(bar) {
   }
   const query = "INSERT INTO " + bar.token + "_" + bar.timePeriod + " VALUES (?, ?, ?, ?, ?, ?)";
   pool.query(query, Object.values(data), (error) => {
-    console.log(query);
     if (error) {
-      console.error(process.env.DB_USER)
-      console.error(process.env.DB_PASS)
-      console.error(process.env.DB_DATABASE)
+      console.error('dbuser' + process.env.DB_USER)
+      console.error('dbpass' + process.env.DB_PASS)
+      console.error('dbdb' + process.env.DB_DATABASE)
       console.error(process.env.INSTANCE_CONNECTION_NAME)
       console.error("Price insertion failed", data, error)
     }
