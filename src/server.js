@@ -31,17 +31,12 @@ app.listen(port, async () => {
   var tokens = Tokens.TokenList;
 
   while (true) {
-    console.log("start")
-    
     // Loop through tokens that we are interestedin
     for  (const token of tokens) {
       const priceUpdateTime = Date.now();
       await priceUpdater.init(token); 
       var currentPrice = await priceUpdater.getLatestPrice(token);
-      console.log(currentPrice)
-      console.log(currentPrice.toFixed())
-
-
+      console.log(token, currentPrice)
       updateCacheAndDatabase(token, fiveMinBarMap, 300, priceUpdateTime)
       updateCacheAndDatabase(token, fourHrBarMap, 14400, priceUpdateTime)
       updateCacheAndDatabase(token, dailyBarMap, 86400, priceUpdateTime)
