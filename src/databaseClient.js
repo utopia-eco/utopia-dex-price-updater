@@ -11,9 +11,9 @@ const { createPool } = require('mysql');
 // });
 
 const pool = mysql.createPool({
-  user: root,
-  password: uayNuFmngm5pgIju,
-  database: token_pair_price_history,
+  user: "root",
+  password: "uayNuFmngm5pgIju",
+  database: "token_pair_price_history",
   socketPath: `/cloudsql/utopia-315014:us-west1:utp-dex-price`,
 });
 
