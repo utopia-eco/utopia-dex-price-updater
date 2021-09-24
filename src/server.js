@@ -16,7 +16,7 @@ app.get('/', (req, res) => {
 // Returns associated limit orders for orderer address
 app.route('/testGet')
   .get(function(req, res) {
-    const query = "SELECT * FROM 0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82_14400  "
+    const query = "SELECT * FROM 0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82_14400"
     pool.query(query, [ req.params.ordererAddress ], (error, results) => {
       if (error) throw error;
       if (!results[0]) {
