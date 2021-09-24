@@ -45,7 +45,7 @@ app.listen(port, async () => {
   var dailyBarMap = new Map();
   var tokens = Tokens.TokenList;
 
-  while (true) {
+  while (false) {
     // Loop through tokens that we are interestedin
     for  (const token of tokens) {
       const priceUpdateTime = Date.now();
