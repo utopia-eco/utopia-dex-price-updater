@@ -48,7 +48,7 @@ app.listen(port, async () => {
   }
 })
 
-function updateCache(token, barMap, timePeriod, currentTime) {
+function updateCacheAndDatabase(token, barMap, timePeriod, currentTime) {
   var bar = barMap.get(token);
       if (bar != null && (bar.startTime + timePeriod) < currentTime) {
         bar.updatePrice(currentPrice, token);
