@@ -28,6 +28,21 @@ app.route('/testGet')
     })
   });
 
+// Returns associated limit orders for orderer address
+app.route('/testGet2')
+  .get(function(req, res) {
+    const query = "SELECT * FROM limitOrders"
+    pool.query(query, [ req.params.ordererAddress ], (error, results) => {
+      console.error(error);
+      if (error) throw error;
+      if (!results[0]) {
+        res.json({ status: "Not Found"});
+      } else {
+        res.json(results[0]);
+      }
+    })
+  });
+
 app.get('/health', (req, res) => res.send("Healthy"));
 
 const { Bar } = require('./bar.js')
