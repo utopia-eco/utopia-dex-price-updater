@@ -74,7 +74,7 @@ function updateDatabaseEntry(bar) {
     "WHERE startTime = ?";
   pool.query(query, Object.values(data), (error) => {
     if (error) {
-      console.error("Price update failed", data)
+      console.error("Price update failed", data, error)
     }
   })
 }
@@ -92,7 +92,7 @@ function createDatabaseEntry(bar) {
   const query = "INSERT INTO " + bar.token + "_" + bar.timePeriod + " VALUES (?, ?, ?, ?, ?, ?)";
   pool.query(query, Object.values(data), (error) => {
     if (error) {
-      console.error("Price insertion failed", data)
+      console.error("Price insertion failed", data, error)
     }
   })
 }
