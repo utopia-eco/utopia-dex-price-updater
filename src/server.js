@@ -37,9 +37,10 @@ app.listen(port, async () => {
       await priceUpdater.init(token); 
       var currentPrice = await priceUpdater.getLatestPrice(token);
       console.log(token, currentPrice)
-      updateCacheAndDatabase(token, currentPrice, fiveMinBarMap, 300, priceUpdateTime)
-      updateCacheAndDatabase(token, currentPrice, fourHrBarMap, 14400, priceUpdateTime)
-      updateCacheAndDatabase(token, currentPrice, dailyBarMap, 86400, priceUpdateTime)
+      fiveMinBarMap.set(token, updateCacheAndDatabase(token, currentPrice, fiveMinBarMap, 300, priceUpdateTime));
+      fourHrBarMap.set(token, updateCacheAndDatabase(token, currentPrice, fourHrBarMap, 14400, priceUpdateTime));
+      dailyBarMap.set(token, updateCacheAndDatabase(token, currentPrice, dailyBarMap, 86400, priceUpdateTime));
+      
 
       await new Promise(r => setTimeout(r, 2000));
 
@@ -54,10 +55,10 @@ function updateCacheAndDatabase(token, currentPrice, barMap, timePeriod, current
         bar.updatePrice(currentPrice, token);
         updateDatabaseEntry(bar);
       } else {
-        fiveMinBar = new Bar(currentTime, timePeriod, currentPrice, token);
+        bar = new Bar(currentTime, timePeriod, currentPrice, token);
         createDatabaseEntry(bar);
       }
-      fiveMinBarMap.set(token, fiveMinBar);
+  return bar;
 }
 
 // Updates database entry for token using Bar object
@@ -68,7 +69,7 @@ function updateDatabaseEntry(bar) {
     low: bar.low,
     high: bar.high
   }
-  const query = "UPDATE " + token + "_" + bar.timePeriod + 
+  const query = "UPDATE " + bar.token + "_" + bar.timePeriod + 
     " SET OPEN = ?, CLOSE = ?, LOW = ?, HIGH = ? " +
     "WHERE startTime = ?";
   pool.query(query, Object.values(data), (error) => {
@@ -80,6 +81,7 @@ function updateDatabaseEntry(bar) {
 
 // Creates database entry for token using Bar object
 function createDatabaseEntry(bar) {
+  console.log(bar)
   const data = {
     startTime: bar.startTime,
     open: bar.open,
@@ -87,7 +89,7 @@ function createDatabaseEntry(bar) {
     low: bar.low,
     high: bar.high
   }
-  const query = "INSERT INTO " + token + "_" + bar.timePeriod + " VALUES (?, ?, ?, ?, ?, ?)";
+  const query = "INSERT INTO " + bar.token + "_" + bar.timePeriod + " VALUES (?, ?, ?, ?, ?, ?)";
   pool.query(query, Object.values(data), (error) => {
     if (error) {
       console.error("Price insertion failed", data)
