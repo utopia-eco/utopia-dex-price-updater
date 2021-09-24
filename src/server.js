@@ -87,6 +87,7 @@ function updateDatabaseEntry(bar) {
   const query = "UPDATE " + bar.token + "_" + bar.timePeriod + 
     " SET OPEN = ?, CLOSE = ?, LOW = ?, HIGH = ? " +
     "WHERE startTime = ?";
+  
   pool.query(query, Object.values(data), (error) => {
     if (error) {
       console.error('dbuser' + process.env.DB_USER)
@@ -109,6 +110,7 @@ function createDatabaseEntry(bar) {
     high: bar.high
   }
   const query = "INSERT INTO " + bar.token + "_" + bar.timePeriod + " VALUES (?, ?, ?, ?, ?, ?)";
+  console.log(query);
   pool.query(query, Object.values(data), (error) => {
     if (error) {
       console.error('dbuser' + process.env.DB_USER)
