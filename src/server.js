@@ -74,6 +74,10 @@ function updateDatabaseEntry(bar) {
     "WHERE startTime = ?";
   pool.query(query, Object.values(data), (error) => {
     if (error) {
+      console.error(process.env.DB_USER)
+      console.error(process.env.DB_PASS)
+      console.error(process.env.DB_DATABASE)
+      console.error(process.env.INSTANCE_CONNECTION_NAME)
       console.error("Price update failed", data, error)
     }
   })
@@ -91,6 +95,7 @@ function createDatabaseEntry(bar) {
   }
   const query = "INSERT INTO " + bar.token + "_" + bar.timePeriod + " VALUES (?, ?, ?, ?, ?, ?)";
   pool.query(query, Object.values(data), (error) => {
+    console.log(query);
     if (error) {
       console.error(process.env.DB_USER)
       console.error(process.env.DB_PASS)
