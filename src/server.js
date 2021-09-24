@@ -15,8 +15,8 @@ app.get('/', (req, res) => {
 
 // Returns associated limit orders for orderer address
 app.route('/testGet')
-  .get(function(req, res, next) {
-    const query = "SELECT * FROM 0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82_14400"
+  .get(function(req, res) {
+    const query = "SELECT * FROM 0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82_14400  "
     pool.query(query, [ req.params.ordererAddress ], (error, results) => {
       if (error) throw error;
       if (!results[0]) {
@@ -56,7 +56,7 @@ app.listen(port, async () => {
       dailyBarMap.set(token, updateCacheAndDatabase(token, currentPrice, dailyBarMap, 86400, priceUpdateTime));
       
 
-      await new Promise(r => setTimeout(r, 2000));
+      await new Promise(r => setTimeout(r, 200000000));
 
     }
     
