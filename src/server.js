@@ -49,13 +49,13 @@ app.listen(port, async () => {
   while (true) {
     // Loop through tokens that we are interestedin
     for  (const token of tokens) {
-      const priceUpdateTime = Date.now(); // Math.round(new Date() / 1000)
+      const priceUpdateTime = Math.round(new Date() / 1000)
       await priceUpdater.init(token); 
       var currentPrice = await priceUpdater.getLatestPrice(token);
       console.log(token, currentPrice)
       fiveMinBarMap.set(token, updateCacheAndDatabase(token, currentPrice, fiveMinBarMap, 300, priceUpdateTime));
-      // fourHrBarMap.set(token, updateCacheAndDatabase(token, currentPrice, fourHrBarMap, 14400, priceUpdateTime));
-      // dailyBarMap.set(token, updateCacheAndDatabase(token, currentPrice, dailyBarMap, 86400, priceUpdateTime));
+      fourHrBarMap.set(token, updateCacheAndDatabase(token, currentPrice, fourHrBarMap, 14400, priceUpdateTime));
+      dailyBarMap.set(token, updateCacheAndDatabase(token, currentPrice, dailyBarMap, 86400, priceUpdateTime));
     }  
   }
 })
@@ -69,12 +69,13 @@ function updateCacheAndDatabase(token, currentPrice, barMap, timePeriod, current
   console.error("prevBar")
   console.error(bar);
   console.error(currentTime)
-  console.error(bar.startTime + timePeriod)
+  
   // Only updates the price if there is a previous recent bar located in the db or locally, and the bar is recent
   if (bar != null && currentTime < (bar.startTime + timePeriod)) {
     bar.updatePrice(currentPrice, token);
     updateDatabaseEntry(bar);
   } else {
+    console.error(bar.startTime + timePeriod)
     bar = Bar.createFreshBar(currentTime, timePeriod, currentPrice, token);
     createDatabaseEntry(bar);
   }
