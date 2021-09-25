@@ -122,6 +122,8 @@ function getPrevBar(token, timePeriod, time) {
       console.error("Retrieval of prev latest input has failed", token, startTime, timePeriod, error)
       throw error;
     }
+    console.error("results");
+    console.error(results);
     if (results == `{"status":"Not Found"}`) {
       return null;
     } else {
