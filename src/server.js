@@ -23,7 +23,7 @@ app.route('/testGet')
       if (!results[0]) {
         res.json({ status: "Not Found"});
       } else {
-        res.json(results[0]);
+        res.json(results);
       }
     })
   });
@@ -55,8 +55,7 @@ app.listen(port, async () => {
       fiveMinBarMap.set(token, updateCacheAndDatabase(token, currentPrice, fiveMinBarMap, 300, priceUpdateTime));
       fourHrBarMap.set(token, updateCacheAndDatabase(token, currentPrice, fourHrBarMap, 14400, priceUpdateTime));
       dailyBarMap.set(token, updateCacheAndDatabase(token, currentPrice, dailyBarMap, 86400, priceUpdateTime));
-    }
-    
+    }  
   }
 })
 
