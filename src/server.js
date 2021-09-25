@@ -116,6 +116,7 @@ function createDatabaseEntry(bar) {
       console.error("Price insertion failed", data, error)
     }
   })
+  console.log("inserted")
 }
 
 function getPrevBarFromDb(token, timePeriod, time) {
