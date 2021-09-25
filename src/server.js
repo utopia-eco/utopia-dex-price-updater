@@ -4,7 +4,7 @@ const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
 const connection = require('./databaseClient');
-const { pool, pool2 } = require('./databaseClient');
+const { pool } = require('./databaseClient');
 const port = process.env.PORT
 
 
@@ -106,10 +106,6 @@ function updateDatabaseEntry(bar) {
   
   pool.query(query, Object.values(data), (error) => {
     if (error) {
-      console.error('dbuser' + process.env.DB_USER)
-      console.error('dbpass' + process.env.DB_PASS)
-      console.error('dbdb' + process.env.DB_DATABASE)
-      console.error(process.env.INSTANCE_CONNECTION_NAME)
       console.error("Price update failed", data, error)
     }
   })
@@ -129,10 +125,6 @@ function createDatabaseEntry(bar) {
   console.log(query);
   pool.query(query, Object.values(data), (error) => {
     if (error) {
-      console.error('dbuser' + process.env.DB_USER)
-      console.error('dbpass' + process.env.DB_PASS)
-      console.error('dbdb' + process.env.DB_DATABASE)
-      console.error(process.env.INSTANCE_CONNECTION_NAME)
       console.error("Price insertion failed", data, error)
     }
   })

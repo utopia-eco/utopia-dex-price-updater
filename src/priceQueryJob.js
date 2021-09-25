@@ -110,7 +110,8 @@ class PriceUpdater {
     if (this.tokenDecimals != 18) {
         price = price.dividedBy(Math.pow(10, this.tokenDecimals));
     }
-    return price;
+    console.log("abcde");
+    return price.toFixed();
   };
 }
 

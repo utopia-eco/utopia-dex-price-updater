@@ -10,19 +10,4 @@ const pool = mysql.createPool({
   socketPath: `/cloudsql/${process.env.INSTANCE_CONNECTION_NAME}`,
 });
 
-
-// const pool = mysql.createPool({
-//   user: "root",
-//   password: "gpEp63bvAOd5oA4y",
-//   database: "token_price_history",
-//   socketPath: `/cloudsql/utopia-315014:us-west1:utp-dex-db`,
-// });
-
-const pool2 = mysql.createPool({
-  user: "root",
-  password: "gpEp63bvAOd5oA4y",
-  database: "utp_dex",
-  socketPath: `/cloudsql/utopia-315014:us-west1:utp-dex-db`,
-});
-
-module.exports = { pool, pool2 };
+module.exports = { pool };
