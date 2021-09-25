@@ -66,9 +66,9 @@ function updateCacheAndDatabase(token, currentPrice, barMap, timePeriod, current
   if (bar == null) {
     bar = getPrevBarFromDb(token, timePeriod, currentTime);
   } 
-  console.log("prevBar")
-  console.log(bar);
-  console.log(currentTime)
+  console.error("prevBar")
+  console.error(bar);
+  console.error(currentTime)
   // Only updates the price if there is a previous recent bar located in the db or locally, and the bar is recent
   if (bar != null && currentTime < (bar.startTime + timePeriod)) {
     bar.updatePrice(currentPrice, token);
