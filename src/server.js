@@ -28,21 +28,6 @@ app.route('/testGet')
     })
   });
 
-// Returns associated limit orders for orderer address
-app.route('/testGet2')
-  .get(function(req, res) {
-    const query = "SELECT * FROM limitOrders"
-    pool2.query(query, [ req.params.ordererAddress ], (error, results) => {
-      console.error(error);
-      if (error) throw error;
-      if (!results[0]) {
-        res.json({ status: "Not Found"});
-      } else {
-        res.json(results[0]);
-      }
-    })
-  });
-
 app.get('/health', (req, res) => res.send("Healthy"));
 
 const { Bar } = require('./bar.js')
@@ -70,10 +55,6 @@ app.listen(port, async () => {
       fiveMinBarMap.set(token, updateCacheAndDatabase(token, currentPrice, fiveMinBarMap, 300, priceUpdateTime));
       fourHrBarMap.set(token, updateCacheAndDatabase(token, currentPrice, fourHrBarMap, 14400, priceUpdateTime));
       dailyBarMap.set(token, updateCacheAndDatabase(token, currentPrice, dailyBarMap, 86400, priceUpdateTime));
-      
-
-      await new Promise(r => setTimeout(r, 200000000));
-
     }
     
   }
