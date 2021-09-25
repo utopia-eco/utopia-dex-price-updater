@@ -64,8 +64,9 @@ function updateCacheAndDatabase(token, currentPrice, barMap, timePeriod, current
   var bar = barMap.get(token);
   // First attempt to retrieve bar from db
   if (bar == null) {
-    bar = getPrevBar(token, timePeriod, currentTime);
+    bar = getPrevBarFromDb(token, timePeriod, currentTime);
   } 
+  // Only updates the price if there is a previous recent bar located in the db or locally, and the bar is recent
   if (bar != null && currentTime < (bar.startTime + timePeriod)) {
     bar.updatePrice(currentPrice, token);
     updateDatabaseEntry(bar);
@@ -114,20 +115,22 @@ function createDatabaseEntry(bar) {
   })
 }
 
-function getPrevBar(token, timePeriod, time) {
+function getPrevBarFromDb(token, timePeriod, time) {
   var startTime = time - (time % timePeriod)
   const query = "SELECT * FROM " + token + "_? WHERE startTime = ?"; // We substitute token directly here else it will have quotes
   pool.query(query, [ timePeriod, startTime], (error, results) => {
     if (error) {
       console.error("Retrieval of prev latest input has failed", token, startTime, timePeriod, error)
-      // throw error;
+      throw error;
     }
     console.error("results");
     console.error(results);
     if (results == undefined || results == `{"status":"Not Found"}` || !results[0]) {
       return null;
     } else {
-      var jsonBar =  JSON.parse(results[0])
+      var jsonBar =  JSON.parse(Object.values(JSON.parse(JSON.stringify(results))));
+      console.log("jsonbar");
+      console.log(jsonBar)
       var bar = new Bar(token, jsonBar.startTime, timePeriod, jsonBar.low, jsonBar.high, jsonBar.open, jsonBar.close)
       return bar;
     }
