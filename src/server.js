@@ -116,7 +116,7 @@ function createDatabaseEntry(bar) {
 
 function getPrevBar(token, timePeriod, time) {
   var startTime = time - (time % timePeriod)
-  const query = "SELECT * FROM " + token + "_? WHERE startTime = ?";
+  const query = "SELECT * FROM " + token + "_? WHERE startTime = ?"; // We substitute token directly here else it will have quotes
   pool.query(query, [ timePeriod, startTime], (error, results) => {
     if (error) {
       console.error("Retrieval of prev latest input has failed", token, startTime, timePeriod, error)
@@ -124,10 +124,10 @@ function getPrevBar(token, timePeriod, time) {
     }
     console.error("results");
     console.error(results);
-    if (results == `{"status":"Not Found"}`) {
+    if (results == `{"status":"Not Found"}` || results == `[]`) {
       return null;
     } else {
-      var jsonBar =  JSON.parse(results[0])
+      var jsonBar =  JSON.parse(results)
       var bar = new Bar(token, jsonBar.startTime, timePeriod, jsonBar.low, jsonBar.high, jsonBar.open, jsonBar.close)
       return bar;
     }
