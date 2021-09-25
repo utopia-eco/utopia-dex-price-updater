@@ -44,6 +44,7 @@ app.listen(port, async () => {
   var fourHrBarMap = new Map();
   var dailyBarMap = new Map();
   var tokens = Tokens.TokenList;
+  
 
   while (true) {
     // Loop through tokens that we are interestedin
@@ -61,13 +62,17 @@ app.listen(port, async () => {
 
 function updateCacheAndDatabase(token, currentPrice, barMap, timePeriod, currentTime) {
   var bar = barMap.get(token);
-      if (bar != null && currentTime < (bar.startTime + timePeriod)) {
-        bar.updatePrice(currentPrice, token);
-        updateDatabaseEntry(bar);
-      } else {
-        bar = new Bar(currentTime, timePeriod, currentPrice, token);
-        createDatabaseEntry(bar);
-      }
+  // First attempt to retrieve bar from db
+  if (bar == null) {
+    bar = getPrevBar(token, timePeriod, currTime);
+  } 
+  if (bar != null && currentTime < (bar.startTime + timePeriod)) {
+    bar.updatePrice(currentPrice, token);
+    updateDatabaseEntry(bar);
+  } else {
+    bar = Bar.createFreshBar(currentTime, timePeriod, currentPrice, token);
+    createDatabaseEntry(bar);
+  }
   return bar;
 }
 
@@ -102,10 +107,26 @@ function createDatabaseEntry(bar) {
     high: bar.high
   }
   const query = "INSERT INTO " + bar.token + "_" + bar.timePeriod + " VALUES (?, ?, ?, ?, ?)";
-  console.log(query);
   pool.query(query, Object.values(data), (error) => {
     if (error) {
       console.error("Price insertion failed", data, error)
+    }
+  })
+}
+
+function getPrevBar(token, timePeriod, time) {
+  var startTime = time - (time % timePeriod)
+  const query = "SELECT * FROM ?_? WHERE startTime =?";
+  pool.query(query, [ token, timePeriod, startTime], (error) => {
+    if (error) {
+      console.error("Retrieval of prev latest input has failed", data, error)
+    }
+    if (results == `{"status":"Not Found"}`) {
+      return null;
+    } else {
+      var jsonBar =  JSON.parse(results[0])
+      var bar = new Bar(token, jsonBar.startTime, timePeriod, jsonBar.low, jsonBar.high, jsonBar.open, jsonBar.close)
+      return bar;
     }
   })
 }

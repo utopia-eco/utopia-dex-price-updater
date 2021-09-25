@@ -1,13 +1,22 @@
 class Bar { 
-    constructor(time, timePeriod, price, token) {
+    constructor(token, startTime, timePeriod, low, high, open, close) {
         this.token = token;
-        //initialTime operation
-        this.startTime = this.getNearestTime(time, timePeriod);
+        this.startTime = startTime;
         this.timePeriod = timePeriod
         this.low = price;
         this.high = price;
         this.open = price;
         this.close = price;
+    }
+
+    static createFreshBar(time, timePeriod, price, token) {
+        return new Bar(token, 
+            this.getNearestTime(time, timePeriod),
+            timePeriod,
+            price,
+            price,
+            price,
+            price)
     }
 
     updatePrice(price) {
