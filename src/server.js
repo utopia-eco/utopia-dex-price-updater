@@ -69,6 +69,7 @@ function updateCacheAndDatabase(token, currentPrice, barMap, timePeriod, current
   console.error("prevBar")
   console.error(bar);
   console.error(currentTime)
+  console.error(bar.startTime + timePeriod)
   // Only updates the price if there is a previous recent bar located in the db or locally, and the bar is recent
   if (bar != null && currentTime < (bar.startTime + timePeriod)) {
     bar.updatePrice(currentPrice, token);
@@ -116,8 +117,9 @@ function createDatabaseEntry(bar) {
     if (error) {
       console.error("Price insertion failed", data, error)
     }
+    console.error("inserted")
   })
-  console.error("inserted")
+  
 }
 
 function getPrevBarFromDb(token, timePeriod, time) {
