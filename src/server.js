@@ -117,9 +117,10 @@ function createDatabaseEntry(bar) {
 function getPrevBar(token, timePeriod, time) {
   var startTime = time - (time % timePeriod)
   const query = "SELECT * FROM ?_? WHERE startTime =?";
-  pool.query(query, [ token, timePeriod, startTime], (error) => {
+  pool.query(query, [ token, timePeriod, startTime], (error, results) => {
     if (error) {
       console.error("Retrieval of prev latest input has failed", token, startTime, timePeriod, error)
+      throw error;
     }
     if (results == `{"status":"Not Found"}`) {
       return null;

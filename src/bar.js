@@ -3,15 +3,15 @@ class Bar {
         this.token = token;
         this.startTime = startTime;
         this.timePeriod = timePeriod
-        this.low = price;
-        this.high = price;
-        this.open = price;
-        this.close = price;
+        this.low = low;
+        this.high = high;
+        this.open = open;
+        this.close = close;
     }
 
     static createFreshBar(time, timePeriod, price, token) {
         return new Bar(token, 
-            this.getNearestTime(time, timePeriod),
+            time - (time % timePeriod),
             timePeriod,
             price,
             price,
