@@ -49,7 +49,7 @@ app.listen(port, async () => {
   while (true) {
     // Loop through tokens that we are interestedin
     for  (const token of tokens) {
-      const priceUpdateTime = Date.now();
+      const priceUpdateTime = Date.now(); // Math.round(new Date() / 1000)
       await priceUpdater.init(token); 
       var currentPrice = await priceUpdater.getLatestPrice(token);
       console.log(token, currentPrice)
@@ -98,11 +98,11 @@ function updateDatabaseEntry(bar) {
       console.error("Price update failed", data, error)
     }
   })
+  console.error("price updated")
 }
 
 // Creates database entry for token using Bar object
 function createDatabaseEntry(bar) {
-  console.log(bar)
   const data = {
     startTime: bar.startTime,
     open: bar.open,
@@ -116,7 +116,7 @@ function createDatabaseEntry(bar) {
       console.error("Price insertion failed", data, error)
     }
   })
-  console.log("inserted")
+  console.error("inserted")
 }
 
 function getPrevBarFromDb(token, timePeriod, time) {
