@@ -75,7 +75,6 @@ function updateCacheAndDatabase(token, currentPrice, barMap, timePeriod, current
     bar.updatePrice(currentPrice, token);
     updateDatabaseEntry(bar);
   } else {
-    console.error(bar.startTime + timePeriod)
     bar = Bar.createFreshBar(currentTime, timePeriod, currentPrice, token);
     createDatabaseEntry(bar);
   }
