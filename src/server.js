@@ -110,6 +110,7 @@ function createDatabaseEntry(bar) {
     low: bar.low,
     high: bar.high
   }
+  console.error("error bar", bar.startTime)
   const query = "INSERT INTO " + bar.token + "_" + bar.timePeriod + " VALUES (?, ?, ?, ?, ?)";
   pool.query(query, Object.values(data), (error) => {
     if (error) {
