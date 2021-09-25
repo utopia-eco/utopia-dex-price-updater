@@ -128,7 +128,7 @@ function getPrevBarFromDb(token, timePeriod, time) {
     if (results == undefined || results == `{"status":"Not Found"}` || !results[0]) {
       return null;
     } else {
-      var jsonBar =  JSON.parse(Object.values(JSON.parse(JSON.stringify(results))));
+      var jsonBar =  JSON.parse(Object.values(JSON.parse(JSON.stringify(results[0]))));
       console.log("jsonbar");
       console.log(jsonBar)
       var bar = new Bar(token, jsonBar.startTime, timePeriod, jsonBar.low, jsonBar.high, jsonBar.open, jsonBar.close)
