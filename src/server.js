@@ -64,7 +64,7 @@ function updateCacheAndDatabase(token, currentPrice, barMap, timePeriod, current
   var bar = barMap.get(token);
   // First attempt to retrieve bar from db
   if (bar == null) {
-    bar = getPrevBar(token, timePeriod, currTime);
+    bar = getPrevBar(token, timePeriod, currentTime);
   } 
   if (bar != null && currentTime < (bar.startTime + timePeriod)) {
     bar.updatePrice(currentPrice, token);
