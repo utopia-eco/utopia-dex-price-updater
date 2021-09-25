@@ -97,7 +97,8 @@ function updateDatabaseEntry(bar) {
     open: bar.open,
     close: bar.close,
     low: bar.low,
-    high: bar.high
+    high: bar.high,
+    startTime: bar.startTime
   }
   const query = "UPDATE " + bar.token + "_" + bar.timePeriod + 
     " SET OPEN = ?, CLOSE = ?, LOW = ?, HIGH = ? " +
@@ -124,7 +125,7 @@ function createDatabaseEntry(bar) {
     low: bar.low,
     high: bar.high
   }
-  const query = "INSERT INTO " + bar.token + "_" + bar.timePeriod + " VALUES (?, ?, ?, ?, ?, ?)";
+  const query = "INSERT INTO " + bar.token + "_" + bar.timePeriod + " VALUES (?, ?, ?, ?, ?)";
   console.log(query);
   pool.query(query, Object.values(data), (error) => {
     if (error) {
