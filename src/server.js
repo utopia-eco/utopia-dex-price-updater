@@ -121,14 +121,14 @@ function getPrevBarFromDb(token, timePeriod, time) {
   pool.query(query, [ timePeriod, startTime], (error, results) => {
     if (error) {
       console.error("Retrieval of prev latest input has failed", token, startTime, timePeriod, error)
-      throw error;
+      // throw error;
     }
     console.error("results");
     console.error(results);
     if (results == undefined || results == `{"status":"Not Found"}` || !results[0]) {
       return null;
     } else {
-      var jsonBar =  JSON.parse(Object.values(JSON.parse(JSON.stringify(results[0]))));
+      var jsonBar =  JSON.parse(JSON.stringify(results));
       console.log("jsonbar");
       console.log(jsonBar)
       var bar = new Bar(token, jsonBar.startTime, timePeriod, jsonBar.low, jsonBar.high, jsonBar.open, jsonBar.close)
