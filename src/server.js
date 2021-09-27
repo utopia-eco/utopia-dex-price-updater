@@ -20,7 +20,6 @@ app.route('/testGet')
   .get(function(req, res) {
     const query = "SELECT * FROM 0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82_14400"
     pool.query(query, [ req.params.ordererAddress ], (error, results) => {
-      console.error(error);
       if (error) throw error;
       if (!results[0]) {
         res.json({ status: "Not Found"});
@@ -65,11 +64,9 @@ app.listen(port, async () => {
 async function updateCacheAndDatabase(token, currentPrice, barMap, timePeriod, currentTime) {
   var bar = barMap.get(token);
   // First attempt to retrieve bar from db
-  console.error("currentTime", currentTime)
   if (bar == null) {
     bar = await getPrevBarFromDb(token, timePeriod, currentTime);
   } 
-  console.error("prev bar", bar)
   // Only updates the price if there is a previous recent bar located in the db or locally, and the bar is recent
   if (bar != null && currentTime < (bar.startTime + timePeriod)) {
     bar.updatePrice(currentPrice, token);
@@ -78,7 +75,6 @@ async function updateCacheAndDatabase(token, currentPrice, barMap, timePeriod, c
     bar = Bar.createFreshBar(currentTime, timePeriod, currentPrice, token);
     await createDatabaseEntry(bar);
   }
-  console.error("returned bar", bar)
   return bar;
 }
 
@@ -96,7 +92,6 @@ async function updateDatabaseEntry(bar) {
     "WHERE startTime = ?";
   
   await pool.query(query, Object.values(data), (error) => {
-    console.error("Update of bar", bar, query)
     if (error) {
       console.error("Price update failed", data, error)
     }
@@ -114,7 +109,6 @@ async function createDatabaseEntry(bar) {
   }
   const query = "INSERT INTO " + bar.token + "_" + bar.timePeriod + " VALUES (?, ?, ?, ?, ?)";
   await pool.query(query, Object.values(data), (error) => {
-    console.error("Creation of new bar", bar, query)
     if (error) {
       console.error("Price insertion failed", data, error)
     }
@@ -135,7 +129,6 @@ async function getPrevBarFromDb(token, timePeriod, time) {
     } else {
       var jsonBar =  JSON.parse(JSON.stringify(results));
       var bar = new Bar(token, jsonBar.startTime, timePeriod, jsonBar.low, jsonBar.high, jsonBar.open, jsonBar.close)
-      console.error("Prev price input", results, bar)
       return bar;
     }
   })
