@@ -54,9 +54,10 @@ app.listen(port, async () => {
       const priceUpdateTime = Math.round(new Date() / 1000)
       await priceUpdater.init(token); 
       var currentPrice = await priceUpdater.getLatestPrice(token);
+      console.error("fiveMinBarMap", fiveMinBarMap)
       fiveMinBarMap.set(token, updateCacheAndDatabase(token, currentPrice, fiveMinBarMap, 300, priceUpdateTime));
-      fourHrBarMap.set(token, updateCacheAndDatabase(token, currentPrice, fourHrBarMap, 14400, priceUpdateTime));
-      dailyBarMap.set(token, updateCacheAndDatabase(token, currentPrice, dailyBarMap, 86400, priceUpdateTime));
+      // fourHrBarMap.set(token, updateCacheAndDatabase(token, currentPrice, fourHrBarMap, 14400, priceUpdateTime));
+      // dailyBarMap.set(token, updateCacheAndDatabase(token, currentPrice, dailyBarMap, 86400, priceUpdateTime));
     }  
   }
 })
@@ -64,10 +65,11 @@ app.listen(port, async () => {
 function updateCacheAndDatabase(token, currentPrice, barMap, timePeriod, currentTime) {
   var bar = barMap.get(token);
   // First attempt to retrieve bar from db
+  console.error(currentTime)
   if (bar == null) {
     bar = getPrevBarFromDb(token, timePeriod, currentTime);
   } 
-  
+  console.error("prev bar", bar)
   // Only updates the price if there is a previous recent bar located in the db or locally, and the bar is recent
   if (bar != null && currentTime < (bar.startTime + timePeriod)) {
     bar.updatePrice(currentPrice, token);
@@ -76,6 +78,7 @@ function updateCacheAndDatabase(token, currentPrice, barMap, timePeriod, current
     bar = Bar.createFreshBar(currentTime, timePeriod, currentPrice, token);
     createDatabaseEntry(bar);
   }
+  console.error("returned bar", bar)
   return bar;
 }
 
@@ -93,6 +96,7 @@ function updateDatabaseEntry(bar) {
     "WHERE startTime = ?";
   
   pool.query(query, Object.values(data), (error) => {
+    console.error("Update of bar", bar, query)
     if (error) {
       console.error("Price update failed", data, error)
     }
@@ -111,6 +115,7 @@ function createDatabaseEntry(bar) {
   console.error("error bar", bar.startTime)
   const query = "INSERT INTO " + bar.token + "_" + bar.timePeriod + " VALUES (?, ?, ?, ?, ?)";
   pool.query(query, Object.values(data), (error) => {
+    console.error("Creation of new bar", bar, query)
     if (error) {
       console.error("Price insertion failed", data, error)
     }
@@ -131,6 +136,7 @@ function getPrevBarFromDb(token, timePeriod, time) {
     } else {
       var jsonBar =  JSON.parse(JSON.stringify(results));
       var bar = new Bar(token, jsonBar.startTime, timePeriod, jsonBar.low, jsonBar.high, jsonBar.open, jsonBar.close)
+      console.error("Prev price input", results, bar)
       return bar;
     }
   })
