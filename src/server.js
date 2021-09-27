@@ -95,7 +95,7 @@ async function updateDatabaseEntry(bar) {
     " SET OPEN = ?, CLOSE = ?, LOW = ?, HIGH = ? " +
     "WHERE startTime = ?";
   
-  pool.query(query, Object.values(data), (error) => {
+  await pool.query(query, Object.values(data), (error) => {
     console.error("Update of bar", bar, query)
     if (error) {
       console.error("Price update failed", data, error)
@@ -113,7 +113,7 @@ async function createDatabaseEntry(bar) {
     high: bar.high
   }
   const query = "INSERT INTO " + bar.token + "_" + bar.timePeriod + " VALUES (?, ?, ?, ?, ?)";
-  pool.query(query, Object.values(data), (error) => {
+  await pool.query(query, Object.values(data), (error) => {
     console.error("Creation of new bar", bar, query)
     if (error) {
       console.error("Price insertion failed", data, error)
@@ -125,7 +125,7 @@ async function createDatabaseEntry(bar) {
 async function getPrevBarFromDb(token, timePeriod, time) {
   var startTime = time - (time % timePeriod)
   const query = "SELECT * FROM " + token + "_? WHERE startTime = ?"; // We substitute token directly here else it will have quotes
-  pool.query(query, [ timePeriod, startTime], (error, results) => {
+  await pool.query(query, [ timePeriod, startTime], (error, results) => {
     if (error) {
       console.error("Retrieval of prev latest input has failed", token, startTime, timePeriod, error)
       throw error;
