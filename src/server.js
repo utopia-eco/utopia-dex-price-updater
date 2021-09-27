@@ -55,14 +55,14 @@ app.listen(port, async () => {
       await priceUpdater.init(token); 
       var currentPrice = await priceUpdater.getLatestPrice(token);
       console.error("fiveMinBarMap", fiveMinBarMap)
-      fiveMinBarMap.set(token, updateCacheAndDatabase(token, currentPrice, fiveMinBarMap, 300, priceUpdateTime));
+      fiveMinBarMap.set(token, await updateCacheAndDatabase(token, currentPrice, fiveMinBarMap, 300, priceUpdateTime));
       // fourHrBarMap.set(token, updateCacheAndDatabase(token, currentPrice, fourHrBarMap, 14400, priceUpdateTime));
       // dailyBarMap.set(token, updateCacheAndDatabase(token, currentPrice, dailyBarMap, 86400, priceUpdateTime));
     }  
   }
 })
 
-function updateCacheAndDatabase(token, currentPrice, barMap, timePeriod, currentTime) {
+async function updateCacheAndDatabase(token, currentPrice, barMap, timePeriod, currentTime) {
   var bar = barMap.get(token);
   // First attempt to retrieve bar from db
   console.error("currentTime", currentTime)
