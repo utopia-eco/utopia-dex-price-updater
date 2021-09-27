@@ -65,25 +65,25 @@ app.listen(port, async () => {
 function updateCacheAndDatabase(token, currentPrice, barMap, timePeriod, currentTime) {
   var bar = barMap.get(token);
   // First attempt to retrieve bar from db
-  console.error(currentTime)
+  console.error("currentTime", currentTime)
   if (bar == null) {
-    bar = getPrevBarFromDb(token, timePeriod, currentTime);
+    bar = await getPrevBarFromDb(token, timePeriod, currentTime);
   } 
   console.error("prev bar", bar)
   // Only updates the price if there is a previous recent bar located in the db or locally, and the bar is recent
   if (bar != null && currentTime < (bar.startTime + timePeriod)) {
     bar.updatePrice(currentPrice, token);
-    updateDatabaseEntry(bar);
+    await updateDatabaseEntry(bar);
   } else {
     bar = Bar.createFreshBar(currentTime, timePeriod, currentPrice, token);
-    createDatabaseEntry(bar);
+    await createDatabaseEntry(bar);
   }
   console.error("returned bar", bar)
   return bar;
 }
 
 // Updates database entry for token using Bar object
-function updateDatabaseEntry(bar) {
+async function updateDatabaseEntry(bar) {
   const data = {
     open: bar.open,
     close: bar.close,
@@ -104,7 +104,7 @@ function updateDatabaseEntry(bar) {
 }
 
 // Creates database entry for token using Bar object
-function createDatabaseEntry(bar) {
+async function createDatabaseEntry(bar) {
   const data = {
     startTime: bar.startTime,
     open: bar.open,
@@ -112,7 +112,6 @@ function createDatabaseEntry(bar) {
     low: bar.low,
     high: bar.high
   }
-  console.error("error bar", bar.startTime)
   const query = "INSERT INTO " + bar.token + "_" + bar.timePeriod + " VALUES (?, ?, ?, ?, ?)";
   pool.query(query, Object.values(data), (error) => {
     console.error("Creation of new bar", bar, query)
@@ -123,7 +122,7 @@ function createDatabaseEntry(bar) {
   
 }
 
-function getPrevBarFromDb(token, timePeriod, time) {
+async function getPrevBarFromDb(token, timePeriod, time) {
   var startTime = time - (time % timePeriod)
   const query = "SELECT * FROM " + token + "_? WHERE startTime = ?"; // We substitute token directly here else it will have quotes
   pool.query(query, [ timePeriod, startTime], (error, results) => {
