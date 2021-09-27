@@ -17,6 +17,9 @@ skip_files:
 - .git
 - node_modules
 
+manual_scaling:
+  instances: 1
+
 
 # [START cloudsql_settings]
 beta_settings:
