@@ -90,7 +90,6 @@ async function updateDatabaseEntry(bar) {
     " SET OPEN = ?, CLOSE = ?, LOW = ?, HIGH = ? " +
     "WHERE startTime = ?";
   
-  console.log("updating");
   try {
     await pool.query(query, Object.values(data)).catch((error) => {
         console.error("Execution of query to update price failed", data, error)
@@ -109,7 +108,7 @@ async function createDatabaseEntry(bar) {
     low: bar.low,
     high: bar.high
   }
-  console.log("inserting");
+  
   const query = "INSERT INTO " + bar.token + "_" + bar.timePeriod + " VALUES (?, ?, ?, ?, ?)";
   try {
     await pool.query(query, Object.values(data)).catch((error) => {
