@@ -54,8 +54,8 @@ app.listen(port, async () => {
       await priceUpdater.init(token); 
       var currentPrice = await priceUpdater.getLatestPrice(token);
       fiveMinBarMap.set(token, await updateCacheAndDatabase(token, currentPrice, fiveMinBarMap, 300, priceUpdateTime));
-      fourHrBarMap.set(token, updateCacheAndDatabase(token, currentPrice, fourHrBarMap, 14400, priceUpdateTime));
-      dailyBarMap.set(token, updateCacheAndDatabase(token, currentPrice, dailyBarMap, 86400, priceUpdateTime));
+      // fourHrBarMap.set(token, updateCacheAndDatabase(token, currentPrice, fourHrBarMap, 14400, priceUpdateTime));
+      // dailyBarMap.set(token, updateCacheAndDatabase(token, currentPrice, dailyBarMap, 86400, priceUpdateTime));
     }  
     await new Promise(resolve => setTimeout(resolve, 5000));
   }
@@ -130,21 +130,24 @@ async function getPrevBarFromDb(token, timePeriod, time) {
   var startTime = time - (time % timePeriod)
   const query = "SELECT * FROM " + token + "_? WHERE startTime = ?"; // We substitute token directly here else it will have quotes
   try {
-    await pool.query(query, [ timePeriod, startTime], (error, results) => {
-      if (error) {
-        console.error("Execution of query to retrieve latest input has failed", token, startTime, timePeriod, error)
-        throw error;
-      }
+    // await pool.query(query, [ timePeriod, startTime], (error, results) => {
+      results = `[{"startTime":1632794700,"open":0.05464485148968846,"close":0.05464402792545562,"low":0.05464363633232198,"high":0.05464485148968846}]`
+      // if (error) {
+      //   console.error("Execution of query to retrieve latest input has failed", token, startTime, timePeriod, error)
+      //   throw error;
+      // }
       if (results == undefined || results == `{"status":"Not Found"}` || !results[0]) {
         return null;
       } else {
         console.warn("Retrieving old bar from database", results)
-        var jsonBar =  JSON.parse(JSON.stringify(results));
+        var jsonBar =  JSON.parse(JSON.parse(JSON.stringify(results)))[0];
+        console.warn("Retrieving old bar", jsonBar)
         var bar = new Bar(token, jsonBar.startTime, timePeriod, jsonBar.low, jsonBar.high, jsonBar.open, jsonBar.close)
+        console.warn("Processed bar", bar)
         return bar;
       }
-    })
+    // })
   } catch (err) {
-    console.err("Attempt to get previous bar from db failed")
+    console.error("Attempt to get previous bar from db failed")
   }
 }
