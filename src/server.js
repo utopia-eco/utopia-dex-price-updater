@@ -139,7 +139,7 @@ async function getPrevBarFromDb(token, timePeriod, time) {
         return null;
       } else {
         console.warn("Retrieving old bar from database", results)
-        var jsonBar =  JSON.parse(JSON.parse(JSON.stringify(results)))[0];
+        var jsonBar =  JSON.parse(JSON.stringify(results))[0];
         console.warn("Retrieving old bar", jsonBar)
         var bar = new Bar(token, jsonBar.startTime, timePeriod, jsonBar.low, jsonBar.high, jsonBar.open, jsonBar.close)
         console.warn("Processed bar", bar)
