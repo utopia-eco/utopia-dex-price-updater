@@ -90,11 +90,15 @@ async function updateDatabaseEntry(bar) {
     " SET OPEN = ?, CLOSE = ?, LOW = ?, HIGH = ? " +
     "WHERE startTime = ?";
   
-  await pool.query(query, Object.values(data), (error) => {
-    if (error) {
-      console.error("Price update failed", data, error)
-    }
-  })
+  try {
+    await pool.query(query, Object.values(data), (error) => {
+      if (error) {
+        console.error("Execution of query to update price failed", data, error)
+      }
+    })
+  } catch (err) {
+    console.error("Creation of connection to update price failed")
+  }
 }
 
 // Creates database entry for token using Bar object
@@ -107,28 +111,35 @@ async function createDatabaseEntry(bar) {
     high: bar.high
   }
   const query = "INSERT INTO " + bar.token + "_" + bar.timePeriod + " VALUES (?, ?, ?, ?, ?)";
-  await pool.query(query, Object.values(data), (error) => {
-    if (error) {
-      console.error("Price insertion failed", data, error)
-    }
-  })
-  
+  try {
+    await pool.query(query, Object.values(data), (error) => {
+      if (error) {
+        console.error("Execution of query to insert price failed", data, error)
+      }
+    })
+  } catch (err) {
+    console.err("Price insertion query failed")
+  }
 }
 
 async function getPrevBarFromDb(token, timePeriod, time) {
   var startTime = time - (time % timePeriod)
   const query = "SELECT * FROM " + token + "_? WHERE startTime = ?"; // We substitute token directly here else it will have quotes
-  await pool.query(query, [ timePeriod, startTime], (error, results) => {
-    if (error) {
-      console.error("Retrieval of prev latest input has failed", token, startTime, timePeriod, error)
-      throw error;
-    }
-    if (results == undefined || results == `{"status":"Not Found"}` || !results[0]) {
-      return null;
-    } else {
-      var jsonBar =  JSON.parse(JSON.stringify(results));
-      var bar = new Bar(token, jsonBar.startTime, timePeriod, jsonBar.low, jsonBar.high, jsonBar.open, jsonBar.close)
-      return bar;
-    }
-  })
+  try {
+    await pool.query(query, [ timePeriod, startTime], (error, results) => {
+      if (error) {
+        console.error("Execution of query to retrieve latest input has failed", token, startTime, timePeriod, error)
+        throw error;
+      }
+      if (results == undefined || results == `{"status":"Not Found"}` || !results[0]) {
+        return null;
+      } else {
+        var jsonBar =  JSON.parse(JSON.stringify(results));
+        var bar = new Bar(token, jsonBar.startTime, timePeriod, jsonBar.low, jsonBar.high, jsonBar.open, jsonBar.close)
+        return bar;
+      }
+    })
+  } catch (err) {
+    console.err("Attempt to get previous bar from db failed")
+  }
 }
