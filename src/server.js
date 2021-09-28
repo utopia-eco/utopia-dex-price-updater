@@ -53,7 +53,7 @@ app.listen(port, async () => {
       const priceUpdateTime = Math.round(new Date() / 1000)
       await priceUpdater.init(token); 
       var currentPrice = await priceUpdater.getLatestPrice(token);
-      fiveMinBarMap.set(token, await updateCacheAndDatabase(token, currentPrice, fiveMinBarMap, 300, priceUpdateTime));
+      fiveMinBarMap.set(token, updateCacheAndDatabase(token, currentPrice, fiveMinBarMap, 300, priceUpdateTime));
       fourHrBarMap.set(token, updateCacheAndDatabase(token, currentPrice, fourHrBarMap, 14400, priceUpdateTime));
       dailyBarMap.set(token, updateCacheAndDatabase(token, currentPrice, dailyBarMap, 86400, priceUpdateTime));
     }  
@@ -61,28 +61,28 @@ app.listen(port, async () => {
   }
 })
 
-async function updateCacheAndDatabase(token, currentPrice, barMap, timePeriod, currentTime) {
+function updateCacheAndDatabase(token, currentPrice, barMap, timePeriod, currentTime) {
   var bar = barMap.get(token);
   // First attempt to retrieve bar from db
-  if (bar == null) {
-    bar = await getPrevBarFromDb(token, timePeriod, currentTime);
+  if (bar == null || bar == undefined) {
+    bar = getPrevBarFromDb(token, timePeriod, currentTime);
     console.error("just retrieved", bar)
   } 
   console.error("outside", bar);
   console.error("times", currentTime, timePeriod)
   // Only updates the price if there is a previous recent bar located in the db or locally, and the bar is recent
-  if (bar != null && currentTime < (bar.startTime + timePeriod)) {
+  if (bar != null && bar != undefined && currentTime < (bar.startTime + timePeriod)) {
     bar.updatePrice(currentPrice, token);
-    await updateDatabaseEntry(bar);
+    updateDatabaseEntry(bar);
   } else {
     bar = Bar.createFreshBar(currentTime, timePeriod, currentPrice, token);
-    await createDatabaseEntry(bar);
+    createDatabaseEntry(bar);
   }
   return bar;
 }
 
 // Updates database entry for token using Bar object
-async function updateDatabaseEntry(bar) {
+function updateDatabaseEntry(bar) {
   const data = {
     open: bar.open,
     close: bar.close,
@@ -95,7 +95,7 @@ async function updateDatabaseEntry(bar) {
     "WHERE startTime = ?";
   
   try {
-    await pool.query(query, Object.values(data), (error) => {
+    pool.query(query, Object.values(data), (error) => {
       if (error) {
         console.error("Execution of query to update price failed", data, error)
       }
@@ -116,7 +116,7 @@ async function createDatabaseEntry(bar) {
   }
   const query = "INSERT INTO " + bar.token + "_" + bar.timePeriod + " VALUES (?, ?, ?, ?, ?)";
   try {
-    await pool.query(query, Object.values(data), (error) => {
+    pool.query(query, Object.values(data), (error) => {
       if (error) {
         console.error("Execution of query to insert price failed", data, error)
       }
@@ -126,11 +126,11 @@ async function createDatabaseEntry(bar) {
   }
 }
 
-async function getPrevBarFromDb(token, timePeriod, time) {
+function getPrevBarFromDb(token, timePeriod, time) {
   var startTime = time - (time % timePeriod)
   const query = "SELECT * FROM " + token + "_? WHERE startTime = ?"; // We substitute token directly here else it will have quotes
   try {
-    await pool.query(query, [ timePeriod, startTime], (error, results) => { 
+    pool.query(query, [ timePeriod, startTime], (error, results) => { 
       if (error) {
         console.error("Execution of query to retrieve latest input has failed", token, startTime, timePeriod, error)
         throw error;
