@@ -53,8 +53,8 @@ app.listen(port, async () => {
       const priceUpdateTime = Math.round(new Date() / 1000)
       await priceUpdater.init(token); 
       var currentPrice = await priceUpdater.getLatestPrice(token);
-      fiveMinBarMap.set(token, await updateCacheAndDatabase(token, currentPrice, fiveMinBarMap, 300, priceUpdateTime));
-      fourHrBarMap.set(token, await updateCacheAndDatabase(token, currentPrice, fourHrBarMap, 14400, priceUpdateTime));
+      // fiveMinBarMap.set(token, await updateCacheAndDatabase(token, currentPrice, fiveMinBarMap, 300, priceUpdateTime));
+      // fourHrBarMap.set(token, await updateCacheAndDatabase(token, currentPrice, fourHrBarMap, 14400, priceUpdateTime));
       dailyBarMap.set(token, await updateCacheAndDatabase(token, currentPrice, dailyBarMap, 86400, priceUpdateTime));
     }  
   }
@@ -90,6 +90,7 @@ async function updateDatabaseEntry(bar) {
     " SET OPEN = ?, CLOSE = ?, LOW = ?, HIGH = ? " +
     "WHERE startTime = ?";
   
+  console.log("updating");
   try {
     await pool.query(query, Object.values(data)).catch((error) => {
         console.error("Execution of query to update price failed", data, error)
@@ -108,6 +109,7 @@ async function createDatabaseEntry(bar) {
     low: bar.low,
     high: bar.high
   }
+  console.log("inserting");
   const query = "INSERT INTO " + bar.token + "_" + bar.timePeriod + " VALUES (?, ?, ?, ?, ?)";
   try {
     await pool.query(query, Object.values(data)).catch((error) => {
@@ -121,22 +123,18 @@ async function createDatabaseEntry(bar) {
 async function getPrevBarFromDb(token, timePeriod, time) {
   var startTime = time - (time % timePeriod)
   const query = "SELECT * FROM " + token + "_? WHERE startTime = ?"; // We substitute token directly here else it will have quotes
-  console.log("retrieving!");
   try {
     const [result, fields] = await pool.query(query, [ timePeriod, startTime]);
-    console.log(result);
-    console.log(result[0]);
     if (!result[0] || result == `{"status":"Not Found"}` ) {
       return null;
     } else {
-      console.warn("Retrieving old bar from database", result)
       var jsonBar =  JSON.parse(JSON.stringify(result))[0];
-      console.warn("Retrieving old bar", jsonBar)
       var bar = new Bar(token, jsonBar.startTime, timePeriod, jsonBar.low, jsonBar.high, jsonBar.open, jsonBar.close)
-      console.warn("Processed retrieved bar", bar)
       return bar;
     }
   } catch (err) {
     console.error("Attempt to get previous bar from db failed")
+    console.error("Old bar from database", result)
+    console.error("Processed retrieved bar", bar)
   }
 }
