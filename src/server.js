@@ -57,6 +57,7 @@ app.listen(port, async () => {
       fourHrBarMap.set(token, updateCacheAndDatabase(token, currentPrice, fourHrBarMap, 14400, priceUpdateTime));
       dailyBarMap.set(token, updateCacheAndDatabase(token, currentPrice, dailyBarMap, 86400, priceUpdateTime));
     }  
+    await new Promise(resolve => setTimeout(resolve, 5000));
   }
 })
 
@@ -65,6 +66,7 @@ async function updateCacheAndDatabase(token, currentPrice, barMap, timePeriod, c
   // First attempt to retrieve bar from db
   if (bar == null) {
     bar = await getPrevBarFromDb(token, timePeriod, currentTime);
+    console.warn(bar);
   } 
   // Only updates the price if there is a previous recent bar located in the db or locally, and the bar is recent
   if (bar != null && currentTime < (bar.startTime + timePeriod)) {
@@ -134,6 +136,7 @@ async function getPrevBarFromDb(token, timePeriod, time) {
       if (results == undefined || results == `{"status":"Not Found"}` || !results[0]) {
         return null;
       } else {
+        console.warn("Retrieving old bar from database", results)
         var jsonBar =  JSON.parse(JSON.stringify(results));
         var bar = new Bar(token, jsonBar.startTime, timePeriod, jsonBar.low, jsonBar.high, jsonBar.open, jsonBar.close)
         return bar;
