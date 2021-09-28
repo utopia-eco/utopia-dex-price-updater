@@ -66,10 +66,7 @@ function updateCacheAndDatabase(token, currentPrice, barMap, timePeriod, current
   // First attempt to retrieve bar from db
   if (bar == null || bar == undefined) {
     bar = getPrevBarFromDb(token, timePeriod, currentTime);
-    console.error("just retrieved", bar)
   } 
-  console.error("outside", bar);
-  console.error("times", currentTime, timePeriod)
   // Only updates the price if there is a previous recent bar located in the db or locally, and the bar is recent
   if (bar != null && bar != undefined && currentTime < (bar.startTime + timePeriod)) {
     bar.updatePrice(currentPrice, token);
@@ -122,7 +119,7 @@ async function createDatabaseEntry(bar) {
       }
     })
   } catch (err) {
-    console.err("Price insertion query failed")
+    console.error("Price insertion query failed")
   }
 }
 
@@ -142,7 +139,7 @@ function getPrevBarFromDb(token, timePeriod, time) {
         var jsonBar =  JSON.parse(JSON.stringify(results))[0];
         console.warn("Retrieving old bar", jsonBar)
         var bar = new Bar(token, jsonBar.startTime, timePeriod, jsonBar.low, jsonBar.high, jsonBar.open, jsonBar.close)
-        console.warn("Processed bar", bar)
+        console.warn("Processed retrieved bar", bar)
         return bar;
       }
     })
