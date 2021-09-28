@@ -130,12 +130,11 @@ async function getPrevBarFromDb(token, timePeriod, time) {
   var startTime = time - (time % timePeriod)
   const query = "SELECT * FROM " + token + "_? WHERE startTime = ?"; // We substitute token directly here else it will have quotes
   try {
-    // await pool.query(query, [ timePeriod, startTime], (error, results) => {
-      results = `[{"startTime":1632794700,"open":0.05464485148968846,"close":0.05464402792545562,"low":0.05464363633232198,"high":0.05464485148968846}]`
-      // if (error) {
-      //   console.error("Execution of query to retrieve latest input has failed", token, startTime, timePeriod, error)
-      //   throw error;
-      // }
+    await pool.query(query, [ timePeriod, startTime], (error, results) => { 
+      if (error) {
+        console.error("Execution of query to retrieve latest input has failed", token, startTime, timePeriod, error)
+        throw error;
+      }
       if (results == undefined || results == `{"status":"Not Found"}` || !results[0]) {
         return null;
       } else {
@@ -146,7 +145,7 @@ async function getPrevBarFromDb(token, timePeriod, time) {
         console.warn("Processed bar", bar)
         return bar;
       }
-    // })
+    })
   } catch (err) {
     console.error("Attempt to get previous bar from db failed")
   }
