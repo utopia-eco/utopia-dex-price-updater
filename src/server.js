@@ -66,8 +66,9 @@ async function updateCacheAndDatabase(token, currentPrice, barMap, timePeriod, c
   // First attempt to retrieve bar from db
   if (bar == null) {
     bar = await getPrevBarFromDb(token, timePeriod, currentTime);
-    console.warn(bar);
+    console.error("just retrieved", bar)
   } 
+  console.error("outside", bar);
   // Only updates the price if there is a previous recent bar located in the db or locally, and the bar is recent
   if (bar != null && currentTime < (bar.startTime + timePeriod)) {
     bar.updatePrice(currentPrice, token);
