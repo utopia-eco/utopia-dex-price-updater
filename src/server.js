@@ -57,6 +57,7 @@ app.listen(port, async () => {
         await priceUpdater.init(token); 
       } catch(error) {
         console.error("error initializing price updater for token", error)
+        continue;
       }
       
 
