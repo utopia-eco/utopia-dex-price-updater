@@ -45,6 +45,7 @@ app.listen(port, async () => {
   var fourHrBarMap = new Map();
   var dailyBarMap = new Map();
   var tokens = Tokens.TokenList;
+  var currentPrice;
   
 
   while (true) {
@@ -52,7 +53,13 @@ app.listen(port, async () => {
     for  (const token of tokens) {
       const priceUpdateTime = Math.round(new Date() / 1000)
       await priceUpdater.init(token); 
-      var currentPrice = await priceUpdater.getLatestPrice(token);
+
+      try {
+        currentPrice = await priceUpdater.getLatestPrice(token);
+      } catch(error) {
+        console.error(error)
+      }
+      
       fiveMinBarMap.set(token, await updateCacheAndDatabase(token, currentPrice, fiveMinBarMap, 300, priceUpdateTime));
       fourHrBarMap.set(token, await updateCacheAndDatabase(token, currentPrice, fourHrBarMap, 14400, priceUpdateTime));
       dailyBarMap.set(token, await updateCacheAndDatabase(token, currentPrice, dailyBarMap, 86400, priceUpdateTime));
@@ -133,7 +140,5 @@ async function getPrevBarFromDb(token, timePeriod, time) {
     }
   } catch (err) {
     console.error("Attempt to get previous bar from db failed")
-    console.error("Old bar from database", result)
-    console.error("Processed retrieved bar", bar)
   }
 }
