@@ -86,7 +86,7 @@ async function updateCacheAndDatabase(token, currentPrice, barMap, timePeriod, c
     await updateDatabaseEntry(bar);
   } else {
     bar = Bar.createFreshBar(currentTime, timePeriod, currentPrice, token);
-    await createDatabaseEntry(bar);
+    bar = await createDatabaseEntry(bar);
   }
   return bar;
 }
@@ -128,8 +128,12 @@ async function createDatabaseEntry(bar) {
     await pool.query(query, Object.values(data)).catch((error) => {
       console.error("Execution of query to insert price failed", data, error)
     })
+    return bar;
   } catch (err) {
     console.error("Price insertion query failed")
+    console.error("Attempting to retrieve bar in case there is a duplicate entry")
+    bar = await getPrevBarFromDb(token, timePeriod, currentTime);
+    return bar;
   }
 }
 

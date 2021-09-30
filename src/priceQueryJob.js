@@ -99,18 +99,21 @@ class PriceUpdater {
   };
 
   getLatestPrice = async function () {
-    const reservesResults = await this.batchCalls(
-      this.contractPairs.map((cp) => ({call: cp.methods.getReserves(), contract: cp }))
-    );
+    try {
+      const reservesResults = await this.batchCalls(
+        this.contractPairs.map((cp) => ({call: cp.methods.getReserves(), contract: cp }))
+      );
+      // Calculate average price for Riskmoon/BNB pair from reserves for PCS
+      var price = this.getAveragedPriceFromReserves(reservesResults);
 
-    // Calculate average price for Riskmoon/BNB pair from reserves for PCS
-    var price = this.getAveragedPriceFromReserves(reservesResults);
-
-    // number is still a whole number, apply the proper decimal places from the contract (9)
-    if (this.tokenDecimals != 18) {
-        price = price.dividedBy(Math.pow(10, this.tokenDecimals));
+      // number is still a whole number, apply the proper decimal places from the contract (9)
+      if (this.tokenDecimals != 18) {
+          price = price.dividedBy(Math.pow(10, this.tokenDecimals));
+      }
+      return Number(price.toFixed());
+    } catch (error) {
+      console.error("Error retrieving price", error);
     }
-    return price.toFixed();
   };
 }
 
