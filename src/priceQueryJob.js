@@ -1,6 +1,6 @@
 const Constants = require("./constants.js")
 const Web3 = require("web3")
-const web3 = new Web3("https://bsc-dataseed1.binance.org:443");
+const web3 = new Web3("https://bsc-dataseed.binance.org/");
 const BigNumber = require("./bigNumber.js");
 
 class PriceUpdater {
