@@ -52,7 +52,7 @@ app.listen(port, async () => {
     // Loop through tokens that we are interestedin
     for  (const token of tokens) {
       const priceUpdateTime = Math.round(new Date() / 1000)
-      console.log("Updating token", new Date()/1000)
+      console.log("Updating token", token, new Date()/1000)
       try {
         await priceUpdater.init(token); 
       } catch(error) {
@@ -63,6 +63,7 @@ app.listen(port, async () => {
 
       try {
         currentPrice = await priceUpdater.getLatestPrice(token);
+        console.log("price of token", token, currentPrice)
       } catch(error) {
         console.error(token, error)
       }
