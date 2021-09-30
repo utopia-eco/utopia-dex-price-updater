@@ -52,7 +52,7 @@ app.listen(port, async () => {
     // Loop through tokens that we are interestedin
     for  (const token of tokens) {
       const priceUpdateTime = Math.round(new Date() / 1000)
-      
+      console.log("Updating token", new Date()/1000)
       try {
         await priceUpdater.init(token); 
       } catch(error) {
@@ -64,12 +64,13 @@ app.listen(port, async () => {
       try {
         currentPrice = await priceUpdater.getLatestPrice(token);
       } catch(error) {
-        console.error(error)
+        console.error(token, error)
       }
       
       fiveMinBarMap.set(token, await updateCacheAndDatabase(token, currentPrice, fiveMinBarMap, 300, priceUpdateTime));
       fourHrBarMap.set(token, await updateCacheAndDatabase(token, currentPrice, fourHrBarMap, 14400, priceUpdateTime));
       dailyBarMap.set(token, await updateCacheAndDatabase(token, currentPrice, dailyBarMap, 86400, priceUpdateTime));
+      await new Promise(resolve => setTimeout(resolve, 5000));
     }  
   }
 })
