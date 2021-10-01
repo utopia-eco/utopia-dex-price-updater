@@ -32,9 +32,9 @@ app.route('/testGet')
 app.get('/health', (req, res) => res.send("Healthy"));
 
 const { Bar } = require('./bar.js')
-const { PriceUpdater } = require("./priceQueryJob")
+const { PriceUpdater, web3Providers } = require("./priceQueryJob")
 const Tokens = require("./tokens.js")
-const TokensList = Tokens.TokensList
+var web3ProviderChoice = 0;
 
 app.listen(port, async () => {
   console.log(`Listening at http://localhost:${port}`)
@@ -46,23 +46,25 @@ app.listen(port, async () => {
   var dailyBarMap = new Map();
   var tokens = Tokens.TokenList;
   var currentPrice;
-  
+
+
 
   while (true) {
     // Loop through tokens that we are interestedin
     for  (const token of tokens) {
       const priceUpdateTime = Math.round(new Date() / 1000)
       console.log("Updating token", token, new Date()/1000)
+      timeLimit = 15000; // 10 second time limit to retrieve price
+      
       try {
-        await priceUpdater.init(token); 
+        await fulfillWithTimeLimit(timeLimit, priceUpdater.init(token, web3ProviderChoice));
       } catch(error) {
         console.error("error initializing price updater for token", error)
         continue;
       }
-      
 
       try {
-        currentPrice = await priceUpdater.getLatestPrice(token);
+        currentPrice = await fulfillWithTimeLimit(timeLimit, await priceUpdater.getLatestPrice(token));
         console.log("price of token", token, currentPrice)
       } catch(error) {
         console.error(token, error)
@@ -154,4 +156,20 @@ async function getPrevBarFromDb(token, timePeriod, time) {
   } catch (err) {
     console.error("Attempt to get previous bar from db failed")
   }
+}
+
+async function fulfillWithTimeLimit(timeLimit, task){
+  let timeout;
+  const timeoutPromise = new Promise((resolve, reject) => {
+      timeout = setTimeout(() => {
+          console.error("web3Provider is not responding after 15 seconds", web3Providers[web3ProviderChoice]);
+          web3ProviderChoice = (web3ProviderChoice + 1) % web3Providers.length;
+          console.error("Using this web3 provider now", web3Providers[web3ProviderChoice])
+      }, timeLimit);
+  });
+  const response = await Promise.race([task, timeoutPromise]);
+  if(timeout){ //the code works without this but let's be safe and clean up the timeout
+      clearTimeout(timeout);
+  }
+  return response;
 }
