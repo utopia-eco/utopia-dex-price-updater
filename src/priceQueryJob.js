@@ -1,7 +1,14 @@
 const Constants = require("./constants.js")
 const Web3 = require("web3")
-const web3 = new Web3("https://bsc-dataseed.binance.org/");
+var web3 = new Web3("https://bsc-dataseed.binance.org/");
 const BigNumber = require("./bigNumber.js");
+
+const web3Providers = ["https://bsc-dataseed.binance.org/",
+                      "https://bsc-dataseed1.defibit.io/",
+                      "https://bsc-dataseed1.ninicoin.io/",
+                      "https://bsc-dataseed2.defibit.io/",
+                      "https://bsc-dataseed3.defibit.io/"
+                      ]
 
 class PriceUpdater {
   pancakeswapFactoryAbi = require("../abis/PancakeFactoryV2.json");
@@ -18,7 +25,9 @@ class PriceUpdater {
   constructor() {
   }
 
-  init = async function (token) {
+  init = async function (token, web3ProviderChoice) {
+
+    web3 = new Web3(web3Providers[web3ProviderChoice]);
 
     const tokenAbi = require("../abis/" + token + ".json");
     const tokenContract = new web3.eth.Contract(
@@ -117,4 +126,4 @@ class PriceUpdater {
   };
 }
 
-module.exports = { PriceUpdater }
+module.exports = { PriceUpdater, web3Providers }
