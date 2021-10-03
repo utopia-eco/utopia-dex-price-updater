@@ -104,7 +104,7 @@ async function updateDatabaseEntry(bar) {
     high: bar.high,
     startTime: bar.startTime
   }
-  const query = "UPDATE " + bar.token + "_" + bar.timePeriod + 
+  const query = "UPDATE " + bar.token.toLowerCase() + "_" + bar.timePeriod + 
     " SET OPEN = ?, CLOSE = ?, LOW = ?, HIGH = ? " +
     "WHERE startTime = ?";
   
@@ -127,7 +127,7 @@ async function createDatabaseEntry(bar) {
     high: bar.high
   }
   
-  const query = "INSERT INTO " + bar.token + "_" + bar.timePeriod + " VALUES (?, ?, ?, ?, ?)";
+  const query = "INSERT INTO " + bar.token.toLowerCase() + "_" + bar.timePeriod + " VALUES (?, ?, ?, ?, ?)";
   try {
     await pool.query(query, Object.values(data)).catch((error) => {
       console.error("Execution of query to insert price failed", data, error)
@@ -143,7 +143,7 @@ async function createDatabaseEntry(bar) {
 
 async function getPrevBarFromDb(token, timePeriod, time) {
   var startTime = time - (time % timePeriod)
-  const query = "SELECT * FROM " + token + "_? WHERE startTime = ?"; // We substitute token directly here else it will have quotes
+  const query = "SELECT * FROM " + token.toLowerCase() + "_? WHERE startTime = ?"; // We substitute token directly here else it will have quotes
   try {
     const [result, fields] = await pool.query(query, [ timePeriod, startTime]);
     if (!result[0] || result == `{"status":"Not Found"}` ) {
