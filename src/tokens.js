@@ -13,6 +13,11 @@ module.exports = Object.freeze({
         "0x55d398326f99059ff775485246999027b3197955", // USDT
         "0xcf6bb5389c92bdda8a3747ddb454cb7a64626c63", // XVS Venus
         "0x4bd17003473389a42daf6a0a729f6fdb328bbbd7", // VAI
+        "0x8f0528ce5ef7b51152a59745befdd91d97091d2f", // ALPACA
+        "0xe0e514c71282b6f4e823703a39374cf58dc3ea4f", // BELT
+        "0x9f589e3eabe42ebc94a44727b3f3531c0c877809", // TokoCrypto
+        "0x42F6f551ae042cBe50C739158b4f0CAC0Edb9096", // Nerve Finance
+        "0xa7f552078dcc247c2684336020c03648500c6d9f", // Ellipsis
         ]
     // TokenList: ["0x1a1d7c7A92e8d7f0de10Ae532ECD9f63B7EAf67c"]
 });
