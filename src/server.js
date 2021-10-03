@@ -73,7 +73,7 @@ app.listen(port, async () => {
       fiveMinBarMap.set(token, await updateCacheAndDatabase(token, currentPrice, fiveMinBarMap, 300, priceUpdateTime));
       fourHrBarMap.set(token, await updateCacheAndDatabase(token, currentPrice, fourHrBarMap, 14400, priceUpdateTime));
       dailyBarMap.set(token, await updateCacheAndDatabase(token, currentPrice, dailyBarMap, 86400, priceUpdateTime));
-      await new Promise(resolve => setTimeout(resolve, 5000));
+      await new Promise(resolve => setTimeout(resolve, 2000));
     }  
   }
 })
